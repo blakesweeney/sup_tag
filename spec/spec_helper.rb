@@ -85,6 +85,8 @@ Delivered-To: mailing list example@example.invalid
 Delivered-To: moderator for example@example.invalid
 From: Fake Sender <fake_sender@example.invalid>
 To: Fake Receiver <fake_receiver@localhost>
+CC: Fake Person <fake_person@someplace>
+BCC: Important Person <person@important>
 Subject: Re: Test message subject
 Message-ID: <20071209194819.GA25972@example.invalid>
 References: <E1J1Rvb-0006k2-CE@localhost.localdomain>
