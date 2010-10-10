@@ -139,4 +139,24 @@ describe "SupTag" do
       end
     end
   end
+
+  context 'archiving' do
+    before do
+      @mess = get_short_message
+      @mess.add_label(:inbox)
+      @tagger = SupTag.new(@mess)
+    end
+    it 'will add a given tag' do
+      @tagger.archive do
+        subj /Test/i, :test
+      end
+      @mess.labels.should == Set[:test]
+    end
+    it 'removes the inbox tag' do
+      @tagger.archive do
+        subj /Test/i, nil
+      end
+      @mess.labels.should == Set[]
+    end
+  end
 end

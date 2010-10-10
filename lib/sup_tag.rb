@@ -17,6 +17,16 @@ class SupTag
     return @message.labels
   end
 
+  # Archive a message. This adds the matching tags and removes the
+  # inbox tag.
+  #
+  # @param [Block] block Block to add tags.
+  # @return [Array] Tags on the message.
+  def archive(&block)
+    remove(:inbox)
+    tag(&block)
+  end
+
   # Tag a message.
   #
   # @param [Block] Block for adding tags.
