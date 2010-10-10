@@ -80,6 +80,12 @@ describe "SupTag" do
         end
         @mess.labels.should == Set[ :test ]
       end
+      it 'will not add a nil tag' do
+        @tagger.tag do
+          subj /Test/i, nil
+        end
+        @mess.labels.should == Set[ ]
+      end
     end
   end
 

@@ -56,7 +56,7 @@ class SupTag
 
     match = args.shift
     match_string = (match.is_a?(Regexp) ? match.source : match.to_s)
-    tags = (args.empty? ? [match_string.downcase] : args)
+    tags = (args.empty? ? [match_string.downcase] : args).compact
     if @message.send(method).match(match)
       tags.map { |t| @message.add_label(t) }
     end
