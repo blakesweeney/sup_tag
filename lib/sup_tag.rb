@@ -36,6 +36,8 @@ class SupTag
     @message.labels
   end
 
+  # Instance eval for blocks stolen from Trollop. Orignally from:
+  # http://redhanded.hobix.com/inspect/aBlockCostume.html.
   def cloaker(&b)
     (class << self; self; end).class_eval do
       define_method :cloaker_, &b
@@ -52,10 +54,10 @@ class SupTag
   def method_missing(method, *args)
     super if !respond_to?(method)
 
-    match = args[0]
+    match = args.shift
     match_string = (match.is_a?(Regexp) ? match.source : match.to_s)
-    tags = args || [match_string]
-    if @message.send(method).match(args.shift)
+    tags = (args.empty? ? [match_string.downcase] : args)
+    if @message.send(method).match(match)
       tags.map { |t| @message.add_label(t) }
     end
   end

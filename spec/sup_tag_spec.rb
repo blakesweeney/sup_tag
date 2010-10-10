@@ -48,11 +48,38 @@ describe "SupTag" do
         end
         @mess.labels.to_a.should == [ :test ]
       end
-      it 'can tag using a string'
-      it 'does not remove the inbox tag'
-      it 'uses all tags given'
-      it 'will set the tag to the given string if no tag given'
-      it 'will set the tag to the given regexp source if no tag given'
+      it 'can tag using a string' do
+        @tagger.tag do
+          subj 'Test', :test
+        end
+        @mess.labels.to_a.should == [ :test ]
+      end
+      it 'does not remove any tags' do
+        @mess.add_label :a
+        @mess.add_label :c
+        @tagger.tag do
+          subj 'Test', :test
+        end
+        @mess.labels.should == Set[ :a, :c, :test ]
+      end
+      it 'uses all tags given' do
+        @tagger.tag do
+          subj 'Test', :test, :a, :c
+        end
+        @mess.labels.should == Set[ :a, :c, :test ]
+      end
+      it 'will set the tag to the given downcased string if no tag given' do
+        @tagger.tag do
+          subj 'Test'
+        end
+        @mess.labels.should == Set[ :test ]
+      end
+      it 'will set the tag to the given regexp source if no tag given' do
+        @tagger.tag do
+          subj /Test/i
+        end
+        @mess.labels.should == Set[ :test ]
+      end
     end
   end
 

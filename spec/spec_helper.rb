@@ -8,6 +8,7 @@ require 'spec/autorun'
 require 'stringio'
 require 'rmail'
 require 'uri'
+require 'set'
 
 #Spec::Runner.configure do |config|
   
