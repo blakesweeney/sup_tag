@@ -19,6 +19,7 @@ class SupTag
 
   # Tag a message.
   #
+  # @param [Block] Block for adding tags.
   # @return [Array] The tags on the message.
   def tag(&block)
     cloaker(&block).bind(self).call
