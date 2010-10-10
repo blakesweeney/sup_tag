@@ -8,11 +8,11 @@ begin
     gem.summary = %Q{Make tagging messages in sup pretty}
     gem.description = %Q{SupTag lets you clean up the before-add-hook script by providing a clean DSL}
     gem.email = "blakes.85@gmail.com"
-    gem.homepage = "http://github.com/blake.sweeney/sup_tag"
+    gem.homepage = "http://github.com/blakesweeney/sup_tag"
     gem.authors = ["Blake Sweeney"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
-    #gem.add_development_dependency "sup", ">= 0.11"
+    gem.add_development_dependency "sup", ">= 0.11"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
