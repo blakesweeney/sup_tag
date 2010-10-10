@@ -10,6 +10,28 @@ This currently supports two methods to add tags, tag and archive. Tag adds tags
 but does not remove the inbox tag. Archive will add a tag and remove the inbox
 tag.
 
+Example
+-------
+
+My before-add-message.rb looks like:
+
+    require 'sup_tag'
+    tagger = SupTag.new(message)
+
+    # Tag messages
+    tagger.tag do
+        from /jnls.cust.serv@oxfordjournals.org/i, :oxford
+        from /some_email/i, :tag1, :tag2
+    end
+
+    # Archive messages
+    tagger.archive do
+        subj /sup-talk/i # Tag messages with sup-talk in subject as sup-talk
+    end
+
+This tags messages from jnls as oxford and leaves them in my inbox. Messages
+from some\_email are given tag1, tag2. Messages from sup-talk are given the
+sup-talk label and the inbox label is removed.
 
 
 Note on Patches/Pull Requests
@@ -20,7 +42,8 @@ Note on Patches/Pull Requests
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+  (if you want to have your own version, that is fine but bump version in a 
+  commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 Copyright
