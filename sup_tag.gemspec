@@ -24,10 +24,13 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/sup_tag.rb",
+     "lib/sup_tag/extensions/Object.rb",
      "spec/dummy_source.rb",
+     "spec/object_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/sup_tag_spec.rb"
+     "spec/sup_tag_spec.rb",
+     "sup_tag.gemspec"
   ]
   s.homepage = %q{http://github.com/blakesweeney/sup_tag}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -36,6 +39,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Make tagging messages in sup pretty}
   s.test_files = [
     "spec/dummy_source.rb",
+     "spec/object_spec.rb",
      "spec/spec_helper.rb",
      "spec/sup_tag_spec.rb"
   ]
