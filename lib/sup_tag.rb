@@ -23,8 +23,9 @@ class SupTag
   # @param [Block] block Block to add tags.
   # @return [Array] Tags on the message.
   def archive(&block)
-    remove(:inbox)
-    tag(&block)
+    match = cloaker(&block).bind(self).call
+    remove(:inbox) if match
+    return @message.labels
   end
 
   # Tag a message.

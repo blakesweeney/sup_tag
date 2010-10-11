@@ -158,5 +158,11 @@ describe "SupTag" do
       end
       @mess.labels.should == Set[]
     end
+    it 'does not remove the inbox tag if there is no match' do
+      @tagger.archive do
+        subj /AWESOME/, :me
+      end
+      @mess.labels.should == Set[:inbox]
+    end
   end
 end
