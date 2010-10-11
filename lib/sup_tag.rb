@@ -1,4 +1,4 @@
-# Class to make tagging 
+# Class to make tagging simple.
 class SupTag
 
   # Create a new SupTag.

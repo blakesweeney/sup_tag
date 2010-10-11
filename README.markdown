@@ -16,16 +16,16 @@ Example
 My before-add-message.rb looks like:
 
     require 'sup_tag'
-    tagger = SupTag.new(message)
+    require 'sup_tag/extensions/object'
 
     # Tag messages
-    tagger.tag do
+    tag do
         from /jnls.cust.serv@oxfordjournals.org/i, :oxford
         from /some_email/i, :tag1, :tag2
     end
 
     # Archive messages
-    tagger.archive do
+    archive do
         subj /sup-talk/i # Tag messages with sup-talk in subject as sup-talk
     end
 
