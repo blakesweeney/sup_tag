@@ -23,8 +23,9 @@ class SupTag
   # @param [Block] block Block to add tags.
   # @return [Array] Tags on the message.
   def archive(&block)
-    match = cloaker(&block).bind(self).call
-    remove(:inbox) if match
+    @match = false
+    cloaker(&block).bind(self).call
+    remove(:inbox) if @match
     return @message.labels
   end
 
@@ -66,6 +67,7 @@ class SupTag
     query = @message.send(method)
     if (!query.is_a?(Array) && query.to_s.match(match)) ||
       (query.is_a?(Array) && query.any? { |q| q.to_s.match(match) } )
+      @match = true
       tags.map { |t| @message.add_label(t) }
     end
   end

@@ -138,6 +138,12 @@ describe "SupTag" do
         @mess.labels.should == Set[ ]
       end
     end
+    it 'does not tag if there is no match' do
+      @tagger.archive do
+        subj /AWESOME/, :me
+      end
+      @mess.labels.should == Set[]
+    end
   end
 
   context 'archiving' do
@@ -161,8 +167,18 @@ describe "SupTag" do
     it 'does not remove the inbox tag if there is no match' do
       @tagger.archive do
         subj /AWESOME/, :me
+        to /other/, :bob
+        from /you/, :joe
       end
       @mess.labels.should == Set[:inbox]
+    end
+    it 'removes the inbox tag if any of the rules match' do
+      @tagger.archive do
+        subj /AWESOME/, :me
+        subj /test/i, :me
+        to /people/, :people
+      end
+      @mess.labels.should == Set[:me]
     end
   end
 end
