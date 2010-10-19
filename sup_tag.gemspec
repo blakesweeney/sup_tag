@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Blake Sweeney"]
-  s.date = %q{2010-10-11}
+  s.date = %q{2010-10-19}
   s.description = %q{SupTag lets you clean up the before-add-hook script by providing a clean DSL}
   s.email = %q{blakes.85@gmail.com}
   s.extra_rdoc_files = [
