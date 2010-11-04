@@ -35,7 +35,7 @@ class SupTag
   # @return [Array] The tags on the message.
   def tag(&block)
     cloaker(&block).bind(self).call
-    @message.labels
+    return @message.labels
   end
 
   # Instance eval for blocks stolen from Trollop. Orignally from:
@@ -58,17 +58,43 @@ class SupTag
     return @message.respond_to?(method) || super
   end
 
-  def method_missing(method, *args)
+  def method_missing(method, *args, &block)
     super if !respond_to?(method)
 
-    match = args.shift
-    match_string = (match.is_a?(Regexp) ? match.source : match.to_s)
-    tags = (args.empty? ? [match_string.downcase] : args).compact
-    query = @message.send(method)
-    if (!query.is_a?(Array) && query.to_s.match(match)) ||
-      (query.is_a?(Array) && query.any? { |q| q.to_s.match(match) } )
+    parts = split_args(args)
+    queries = parts.first
+    results = Array(@message.send(method))
+    count = match_args(results, queries)
+    if count.size == queries.size
       @match = true
-      tags.map { |t| @message.add_label(t) }
+      parts.last.compact.each { |l| @message.add_label(l) }
     end
   end
+
+  private
+    # Split the arguments into labels and queries.
+    #
+    # @param [Array] arguments Arguments to split.
+    def split_args(arguments)
+      parts = arguments.partition { |e| !e.is_a?(Symbol) && e }
+
+      # Generate labels if none given
+      if parts[1].empty?
+        parts[1] = parts[0].map do |part|
+          (part.is_a?(Regexp) ? part.source : part.to_s).downcase
+        end
+      end
+      
+      return parts
+    end
+
+    # Match the results against the queries and count how many match.
+    #
+    # @param [Array] results Results to check.
+    # @param [Array] queries Queries to look for.
+    def match_args(results, queries)
+      queries.map do |query|
+        (results.any? { |r| r.to_s.match(query) } ? 1 : nil)
+      end.compact
+    end
 end
