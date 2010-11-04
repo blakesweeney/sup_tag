@@ -1,3 +1,4 @@
+require 'sup_tag/extensions/binding'
 # Modify Object to support tag and archive methods.
 
 class Object
@@ -25,6 +26,6 @@ class Object
   # @param [Block] A Block to generate the tagger object with.
   # @return [SupTag] A SupTag object.
   def get_tagger(&block)
-    return SupTag.new(eval("lambda { message }", block.binding).call)
+    return SupTag.new(block.binding[:message])
   end
 end
