@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sup_tag}
-  s.version = "0.1.2"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Blake Sweeney"]
-  s.date = %q{2010-10-19}
+  s.date = %q{2010-11-05}
   s.description = %q{SupTag lets you clean up the before-add-hook script by providing a clean DSL}
   s.email = %q{blakes.85@gmail.com}
   s.extra_rdoc_files = [
@@ -25,11 +25,13 @@ Gem::Specification.new do |s|
      "VERSION",
      "lib/sup_tag.rb",
      "lib/sup_tag/extensions/Object.rb",
+     "lib/sup_tag/extensions/binding.rb",
      "spec/dummy_source.rb",
-     "spec/object_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/sup_tag_spec.rb",
+     "spec/sup_tag/extensions/binding_spec.rb",
+     "spec/sup_tag/extensions/object_spec.rb",
+     "spec/sup_tag/sup_tag_spec.rb",
      "sup_tag.gemspec"
   ]
   s.homepage = %q{http://github.com/blakesweeney/sup_tag}
@@ -39,9 +41,10 @@ Gem::Specification.new do |s|
   s.summary = %q{Make tagging messages in sup pretty}
   s.test_files = [
     "spec/dummy_source.rb",
-     "spec/object_spec.rb",
      "spec/spec_helper.rb",
-     "spec/sup_tag_spec.rb"
+     "spec/sup_tag/extensions/binding_spec.rb",
+     "spec/sup_tag/extensions/object_spec.rb",
+     "spec/sup_tag/sup_tag_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
