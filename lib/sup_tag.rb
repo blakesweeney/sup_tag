@@ -6,6 +6,7 @@ class SupTag
   # @param [Redwood::Message] message A Message to tag.
   def initialize(message)
     @message = message
+    @add = true
   end
 
   # Remove the given tags from the message.
@@ -46,9 +47,13 @@ class SupTag
   # @return [Array] The tags on the message
   def multi(*labels, &block)
     @multi = true
+    @add = false
     cloaker(&block).bind(self).call
-    @labels = nil # Really don't like this hack
-    labels.each { |t| @message.add_label(t) } if @multi
+    @add = true
+    if @multi
+      @labels.concat(labels)
+      @match = true
+    end
     return @message.labels
   end
 
@@ -84,7 +89,7 @@ class SupTag
     if count.size == queries.size
       @labels ||= []
       @multi &= true
-      @labels.concat(parts.last.compact)
+      @labels.concat(parts.last.compact) if @add
     else
       @multi = false
     end
