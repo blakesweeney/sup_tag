@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 describe "SupTag" do
   context 'respond_to' do
@@ -84,6 +84,51 @@ describe "SupTag" do
         end
         @mess.labels.should == Set[:old]
       end
+      it 'can tag using several criteria at once' do
+        @tagger.tag do
+          date /2/, /7/, :self
+        end
+        @mess.labels.should == Set[:self]
+      end
+      it 'requires all criteria to match' do
+        @tagger.tag do
+          date /2/, /blake/, :me
+        end
+        @mess.labels.should == Set.new
+      end
+      it 'uses all requirements as the labels if none given' do
+        @tagger.tag do
+          date /2/, /7/
+        end
+        @mess.labels.should == Set['2'.to_sym, '7'.to_sym]
+      end
+      it 'can use a multi tag block to specify requirements on several results' do
+        @tagger.tag do
+          multi :bob do
+            subj /test/i
+            date /2/
+          end
+        end
+        @mess.labels.should == Set[:bob]
+      end
+      it 'requires that all queries in the multi block match to tag' do
+        @tagger.tag do
+          multi :bob do
+            subj /test/i
+            date '-1'
+          end
+        end
+        @mess.labels.should == Set[]
+      end
+      it 'can add several tags with a multi block' do
+        @tagger.tag do
+          multi :jo, :bob do
+            subj /test/i
+            date /2/
+          end
+        end
+        @mess.labels.should == Set[:jo, :bob]
+      end
     end
 
     context 'adding tags' do
@@ -144,6 +189,15 @@ describe "SupTag" do
       end
       @mess.labels.should == Set[]
     end
+    it 'will archive if all querires in a multi block hit' do
+      @tagger.archive do
+        multi :me do
+          subj /Test/
+          date '2'
+        end
+      end
+      @mess.labels.should == Set[:me]
+    end
   end
 
   context 'archiving' do
@@ -179,6 +233,18 @@ describe "SupTag" do
         to /people/, :people
       end
       @mess.labels.should == Set[:me]
+    end
+    it 'archives if all queries hit' do
+      @tagger.archive do
+        subj /t/, /e/, :hi
+      end
+      @mess.labels.should == Set[:hi]
+    end
+    it 'will not archive if all queries do not hit' do
+      @tagger.archive do
+        subj /t/, /J/, :hi
+      end
+      @mess.labels.should == Set[:inbox]
     end
   end
 end

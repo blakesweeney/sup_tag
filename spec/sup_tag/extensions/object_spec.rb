@@ -1,5 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'sup_tag/extensions/object'
+require 'spec_helper'
 
 describe 'Object' do
   before do

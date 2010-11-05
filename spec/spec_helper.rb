@@ -1,10 +1,12 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'sup_tag'
+require 'sup_tag/extensions/object'
+require 'sup_tag/extensions/binding'
 require "rubygems"
 require "sup"
-require 'spec'
-require 'spec/autorun'
+#require 'spec'
+#require 'spec/autorun'
 require 'stringio'
 require 'rmail'
 require 'uri'

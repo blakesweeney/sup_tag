@@ -23,9 +23,8 @@ class SupTag
   # @param [Block] block Block to add tags.
   # @return [Array] Tags on the message.
   def archive(&block)
-    @match = false
-    cloaker(&block).bind(self).call
-    remove(:inbox) if @match
+    tag(&block)
+    remove(:inbox) if @labels
     return @message.labels
   end
 
@@ -34,8 +33,23 @@ class SupTag
   # @param [Block] Block for adding tags.
   # @return [Array] The tags on the message.
   def tag(&block)
+    @labels = nil
     cloaker(&block).bind(self).call
-    @message.labels
+    @labels.each { |l| @message.add_label(l) } if @labels
+    return @message.labels
+  end
+
+  # Test queries across several feilds to add tags.
+  #
+  # @param [Symbol, Array] labels Labels to add.
+  # @param [Block] Block for adding tags.
+  # @return [Array] The tags on the message
+  def multi(*labels, &block)
+    @multi = true
+    cloaker(&block).bind(self).call
+    @labels = nil # Really don't like this hack
+    labels.each { |t| @message.add_label(t) } if @multi
+    return @message.labels
   end
 
   # Instance eval for blocks stolen from Trollop. Orignally from:
@@ -54,21 +68,52 @@ class SupTag
     end
   end
 
+  # Override to include methods from messages.
   def respond_to?(method, include_private = false)
     return @message.respond_to?(method) || super
   end
 
-  def method_missing(method, *args)
+  # Override method missing to allow for matching the results of
+  # a method on message against some queries.
+  def method_missing(method, *args, &block)
     super if !respond_to?(method)
-
-    match = args.shift
-    match_string = (match.is_a?(Regexp) ? match.source : match.to_s)
-    tags = (args.empty? ? [match_string.downcase] : args).compact
-    query = @message.send(method)
-    if (!query.is_a?(Array) && query.to_s.match(match)) ||
-      (query.is_a?(Array) && query.any? { |q| q.to_s.match(match) } )
-      @match = true
-      tags.map { |t| @message.add_label(t) }
+    parts = split_args(args)
+    queries = parts.first
+    results = Array(@message.send(method))
+    count = match_args(results, queries)
+    if count.size == queries.size
+      @labels ||= []
+      @multi &= true
+      @labels.concat(parts.last.compact)
+    else
+      @multi = false
     end
   end
+
+  private
+    # Split the arguments into labels and queries.
+    #
+    # @param [Array] arguments Arguments to split.
+    def split_args(arguments)
+      parts = arguments.partition { |e| !e.is_a?(Symbol) && e }
+
+      # Generate labels if none given
+      if parts[1].empty?
+        parts[1] = parts[0].map do |part|
+          (part.is_a?(Regexp) ? part.source : part.to_s).downcase
+        end
+      end
+
+      return parts
+    end
+
+    # Match the results against the queries and count how many match.
+    #
+    # @param [Array] results Results to check.
+    # @param [Array] queries Queries to look for.
+    def match_args(results, queries)
+      queries.map do |query|
+        (results.any? { |r| r.to_s.match(query) } ? 1 : nil)
+      end.compact
+    end
 end
