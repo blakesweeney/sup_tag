@@ -23,9 +23,8 @@ class SupTag
   # @param [Block] block Block to add tags.
   # @return [Array] Tags on the message.
   def archive(&block)
-    @match = false
-    cloaker(&block).bind(self).call
-    remove(:inbox) if @match
+    tag(&block)
+    remove(:inbox) if @labels
     return @message.labels
   end
 
@@ -34,7 +33,22 @@ class SupTag
   # @param [Block] Block for adding tags.
   # @return [Array] The tags on the message.
   def tag(&block)
+    @labels = nil
     cloaker(&block).bind(self).call
+    @labels.each { |l| @message.add_label(l) } if @labels
+    return @message.labels
+  end
+
+  # Test queries across several feilds to add tags.
+  #
+  # @param [Symbol, Array] labels Labels to add.
+  # @param [Block] Block for adding tags.
+  # @return [Array] The tags on the message
+  def multi(*labels, &block)
+    @multi = true
+    cloaker(&block).bind(self).call
+    @labels = nil # Really don't like this hack
+    labels.each { |t| @message.add_label(t) } if @multi
     return @message.labels
   end
 
@@ -54,20 +68,25 @@ class SupTag
     end
   end
 
+  # Override to include methods from messages.
   def respond_to?(method, include_private = false)
     return @message.respond_to?(method) || super
   end
 
+  # Override method missing to allow for matching the results of
+  # a method on message against some queries.
   def method_missing(method, *args, &block)
     super if !respond_to?(method)
-
     parts = split_args(args)
     queries = parts.first
     results = Array(@message.send(method))
     count = match_args(results, queries)
     if count.size == queries.size
-      @match = true
-      parts.last.compact.each { |l| @message.add_label(l) }
+      @labels ||= []
+      @multi &= true
+      @labels.concat(parts.last.compact)
+    else
+      @multi = false
     end
   end
 
@@ -84,7 +103,7 @@ class SupTag
           (part.is_a?(Regexp) ? part.source : part.to_s).downcase
         end
       end
-      
+
       return parts
     end
 

@@ -102,6 +102,33 @@ describe "SupTag" do
         end
         @mess.labels.should == Set['2'.to_sym, '7'.to_sym]
       end
+      it 'can use a multi tag block to specify requirements on several results' do
+        @tagger.tag do
+          multi :bob do
+            subj /test/i
+            date /2/
+          end
+        end
+        @mess.labels.should == Set[:bob]
+      end
+      it 'requires that all queries in the multi block match to tag' do
+        @tagger.tag do
+          multi :bob do
+            subj /test/i
+            date '-1'
+          end
+        end
+        @mess.labels.should == Set[]
+      end
+      it 'can add several tags with a multi block' do
+        @tagger.tag do
+          multi :jo, :bob do
+            subj /test/i
+            date /2/
+          end
+        end
+        @mess.labels.should == Set[:jo, :bob]
+      end
     end
 
     context 'adding tags' do
@@ -161,6 +188,15 @@ describe "SupTag" do
         subj /AWESOME/, :me
       end
       @mess.labels.should == Set[]
+    end
+    it 'will archive if all querires in a multi block hit' do
+      @tagger.archive do
+        multi :me do
+          subj /Test/
+          date '2'
+        end
+      end
+      @mess.labels.should == Set[:me]
     end
   end
 
