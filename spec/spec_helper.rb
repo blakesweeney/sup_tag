@@ -5,8 +5,6 @@ require 'sup_tag/extensions/object'
 require 'sup_tag/extensions/binding'
 require "rubygems"
 require "sup"
-#require 'spec'
-#require 'spec/autorun'
 require 'stringio'
 require 'rmail'
 require 'uri'

@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe "SupTag" do
+  before do
+    @mess = get_short_message
+    @tagger = SupTag.new(@mess)
+  end
+
   context 'respond_to' do
     it 'responds to taggable methods' do
       [ :from, :subj, :to, :replyto ].each do |meth|
@@ -10,11 +15,6 @@ describe "SupTag" do
   end
 
   context 'tags' do
-    before do
-      @mess = get_short_message
-      @tagger = SupTag.new(@mess)
-    end
-
     context 'removing tags' do
       it 'can remove a given tag' do
         @mess.add_label(:t)
@@ -245,6 +245,57 @@ describe "SupTag" do
         subj /t/, /J/, :hi
       end
       @mess.labels.should == Set[:inbox]
+    end
+  end
+
+  context 'complex tests' do
+    it 'can properly tag a block with many rules' do
+      @tagger.tag do
+        subj /something/
+        from /BAD/
+        subj /test/i, :bob, :other
+        to /WHO/
+      end
+      @mess.labels.should == Set[:bob, :other]
+    end
+    it 'can properly tag a block with a multi block' do
+      @tagger.tag do
+        subj /something/
+        from /BAD/
+        subj /test/i, :bob, :other
+        to /WHO/
+        multi :ann do
+          subj /test/i
+          from /Sender/i
+        end
+        to /Bob/
+      end
+      @mess.labels.should == Set[:bob, :other, :ann]
+    end
+    it 'can properly archive with a block of many rules' do
+      @mess.add_label(:inbox)
+      @tagger.archive do
+        subj /something/
+        from /BAD/
+        subj /test/i, :bob, :other
+        to /WHO/
+      end
+      @mess.labels.should == Set[:bob, :other]
+    end
+    it 'can properly archive a block with a multiblock rule' do
+      @mess.add_label(:inbox)
+      @tagger.archive do
+        subj /something/
+        from /BAD/
+        subj /test/i, :bob, :other
+        to /WHO/
+        multi :ann do
+          subj /test/i
+          from /Sender/i
+        end
+        to /Bob/
+      end
+      @mess.labels.should == Set[:bob, :other, :ann]
     end
   end
 end
